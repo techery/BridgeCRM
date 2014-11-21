@@ -3,6 +3,7 @@ package com.bridgecrm.ui.activity;
 import android.app.Activity;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -12,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bridgecrm.App;
 import com.bridgecrm.R;
@@ -23,7 +25,7 @@ import timber.log.Timber;
 
 
 public class MainActivity extends BaseActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+    implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     @Inject
     LocationManager locationManager; // just for DI testing
@@ -45,13 +47,14 @@ public class MainActivity extends BaseActivity
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+            getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+            R.id.navigation_drawer,
+            (DrawerLayout) findViewById(R.id.drawer_layout)
+        );
 
         Timber.d("LOCATION PROVIDERS: %s", locationManager.getAllProviders());
     }
@@ -61,8 +64,8 @@ public class MainActivity extends BaseActivity
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+            .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+            .commit();
     }
 
     public void onSectionAttached(int number) {
@@ -142,16 +145,23 @@ public class MainActivity extends BaseActivity
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             return rootView;
+        }
+
+        @Override
+        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+            view.setOnClickListener(v -> Toast.makeText(getActivity(), "Piu", Toast.LENGTH_SHORT).show());
         }
 
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
             ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
+                getArguments().getInt(ARG_SECTION_NUMBER)
+            );
         }
     }
 
