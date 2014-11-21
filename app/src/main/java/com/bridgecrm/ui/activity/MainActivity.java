@@ -1,26 +1,32 @@
-package com.bridgecrm;
+package com.bridgecrm.ui.activity;
 
 import android.app.Activity;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
-import android.os.Bundle;
-import android.view.Gravity;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
+
+import com.bridgecrm.App;
+import com.bridgecrm.R;
+import com.bridgecrm.ui.fragment.NavigationDrawerFragment;
+
+import javax.inject.Inject;
+
+import timber.log.Timber;
 
 
-public class MainActivity extends ActionBarActivity
+public class MainActivity extends BaseActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+
+    @Inject
+    LocationManager locationManager; // just for DI testing
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -35,6 +41,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        App.from(this).component().inject(this);
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -45,6 +52,8 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        Timber.d("LOCATION PROVIDERS: %s", locationManager.getAllProviders());
     }
 
     @Override
