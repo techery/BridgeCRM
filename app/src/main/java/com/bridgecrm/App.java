@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.bridgecrm.di.AppGraph;
+import com.bridgecrm.manager.ParseManager;
 import com.bridgecrm.manager.lifecycle.AppComponentCallback;
 import com.bridgecrm.manager.lifecycle.MainLifecycleCallbacks;
 import com.bridgecrm.util.app.ActivityHierarchyServer;
@@ -25,6 +26,9 @@ public class App extends Application {
     @Inject
     AppComponentCallback appComponentCallback;
 
+    @Inject
+    ParseManager parseManager;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -42,6 +46,8 @@ public class App extends Application {
         registerActivityLifecycleCallbacks(activityHierarchyServer);
         registerActivityLifecycleCallbacks(mainLifecycleCallbacks);
         registerComponentCallbacks(appComponentCallback);
+
+        parseManager.initialize();
     }
 
     ///////////////////////////////////////////////////////////////////////////
