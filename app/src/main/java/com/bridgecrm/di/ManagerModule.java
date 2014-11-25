@@ -1,26 +1,62 @@
 package com.bridgecrm.di;
 
-import android.app.Application;
 import android.content.Context;
-import android.location.LocationManager;
 
-import com.bridgecrm.util.app.ActivityHierarchyServer;
+import com.bridgecrm.api.AccountApi;
+import com.bridgecrm.manager.GoogleTrackingManager;
+import com.bridgecrm.manager.PreferenceWrapper;
+import com.bridgecrm.manager.SessionManager;
+import com.bridgecrm.manager.TrackingWrapper;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 
-@Module
+import static com.bridgecrm.manager.GoogleTrackingManager.GoogleAnalyticsCredentialsHolder;
+
+@Module(includes = {ApiModule.class, CredentialsModule.class})
 public class ManagerModule {
 
+    ///////////////////////////////////////////////////////////////////////////
+    // Persistence
+    ///////////////////////////////////////////////////////////////////////////
+
     @Provides
-    ActivityHierarchyServer provideActivityHierarchyServer() {
-        return ActivityHierarchyServer.NONE;
+    @Singleton
+    PreferenceWrapper providePreferenceWrapper(Context context) {
+        return new PreferenceWrapper(context);
     }
 
-    @Provides @Singleton
-    LocationManager provideLocationManager(Application app) {
-        return (LocationManager) app.getSystemService(Context.LOCATION_SERVICE);
+    ///////////////////////////////////////////////////////////////////////////
+    // Api
+    ///////////////////////////////////////////////////////////////////////////
+
+    /** See {@link ApiModule} */
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Main managers
+    ///////////////////////////////////////////////////////////////////////////
+
+    @Provides
+    @Singleton
+    SessionManager provideSessionManager(Context context, AccountApi accountApi, PreferenceWrapper preferenceWrapper, TrackingWrapper trackingWrapper) {
+        return new SessionManager(context, preferenceWrapper, trackingWrapper, accountApi);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Tracking
+    ///////////////////////////////////////////////////////////////////////////
+
+    @Provides
+    @Singleton
+    TrackingWrapper provideTrackingWrapper(GoogleTrackingManager googleTrackingManager) {
+        return new TrackingWrapper(googleTrackingManager);
+    }
+
+    @Provides
+    @Singleton
+    GoogleTrackingManager provideGoogleTrackingManager(Context context, GoogleAnalyticsCredentialsHolder credentials) {
+        return new GoogleTrackingManager(context, credentials);
     }
 }

@@ -2,6 +2,7 @@ package com.bridgecrm;
 
 import com.bridgecrm.di.AppGraph;
 import com.bridgecrm.di.AppModule;
+import com.bridgecrm.di.LifecycleModule;
 import com.bridgecrm.di.ManagerModule;
 
 import javax.inject.Singleton;
@@ -12,7 +13,7 @@ import dagger.Component;
  * The core debug component for u2020 applications
  */
 @Singleton
-@Component(modules = {AppModule.class, ManagerModule.class /*, DebugUiModule.class, DebugDataModule.class*/})
+@Component(modules = {AppModule.class, ManagerModule.class, LifecycleModule.class /*, DebugUiModule.class, DebugDataModule.class*/})
 public interface AppComponent extends AppGraph {
 
     /**

@@ -1,7 +1,6 @@
 package com.bridgecrm.ui.activity;
 
 import android.app.Activity;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,16 +18,9 @@ import com.bridgecrm.App;
 import com.bridgecrm.R;
 import com.bridgecrm.ui.fragment.NavigationDrawerFragment;
 
-import javax.inject.Inject;
-
-import timber.log.Timber;
-
 
 public class MainActivity extends BaseActivity
     implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-
-    @Inject
-    LocationManager locationManager; // just for DI testing
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -55,8 +47,6 @@ public class MainActivity extends BaseActivity
             R.id.navigation_drawer,
             (DrawerLayout) findViewById(R.id.drawer_layout)
         );
-
-        Timber.d("LOCATION PROVIDERS: %s", locationManager.getAllProviders());
     }
 
     @Override

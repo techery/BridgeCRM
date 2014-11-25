@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 
 import com.bridgecrm.di.AppGraph;
+import com.bridgecrm.manager.lifecycle.AppComponentCallback;
+import com.bridgecrm.manager.lifecycle.MainLifecycleCallbacks;
 import com.bridgecrm.util.app.ActivityHierarchyServer;
 
 import javax.inject.Inject;
@@ -18,6 +20,10 @@ public class App extends Application {
 
     @Inject
     ActivityHierarchyServer activityHierarchyServer;
+    @Inject
+    MainLifecycleCallbacks mainLifecycleCallbacks;
+    @Inject
+    AppComponentCallback appComponentCallback;
 
     @Override
     public void onCreate() {
@@ -34,6 +40,8 @@ public class App extends Application {
         buildComponentAndInject();
 
         registerActivityLifecycleCallbacks(activityHierarchyServer);
+        registerActivityLifecycleCallbacks(mainLifecycleCallbacks);
+        registerComponentCallbacks(appComponentCallback);
     }
 
     ///////////////////////////////////////////////////////////////////////////
