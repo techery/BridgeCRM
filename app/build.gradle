@@ -112,7 +112,7 @@ dependencies {
     // services
     compile 'com.google.android.gms:play-services:6.+'
     // util
-    compile 'com.jakewharton:butterknife:6.+'
+    compile 'com.jakewharton:butterknife:6.0.0'
     compile 'com.jakewharton.timber:timber:2.+'
     debugCompile 'com.jakewharton.madge:madge:1.+'
     debugCompile 'com.jakewharton.scalpel:scalpel:1.+'
