@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
@@ -34,6 +33,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import butterknife.OnEditorAction;
 import me.tatarka.rxloader.RxLoader1;
 import me.tatarka.rxloader.RxLoaderManager;
 import me.tatarka.rxloader.RxLoaderManagerCompat;
@@ -43,7 +43,7 @@ import timber.log.Timber;
 /**
  * A login screen that offers login via email/password.
  */
-public class AuthActivity extends FragmentActivity {
+public class AuthActivity extends BaseActivity {
 
     // UI references.
     @InjectView(R.id.email)
@@ -60,6 +60,11 @@ public class AuthActivity extends FragmentActivity {
     @Inject
     ActivityMediator activityMediator;
 
+    private RxLoaderManager rxLoaderManager;
+    private RxLoader1<LoginData, AuthResult> loginJob;
+
+    private AuthActivityOperator asyncOperator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,20 +72,27 @@ public class AuthActivity extends FragmentActivity {
         setContentView(R.layout.activity_auth);
         ButterKnife.inject(this);
 
+        asyncOperator = AuthActivityOperator.build().operations(this).withinActivity(this).get();
+
         // Set up the login form.
+        handleEmailAutoComplete();
         populateAutoComplete();
 
-        mPasswordView.setOnEditorActionListener((textView, id, keyEvent) -> {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
-            }
-        );
-
         rxLoaderManager = RxLoaderManagerCompat.get(this);
-        loginJob = rxLoaderManager.create((LoginData data) -> sessionManager.tryLogin(data),
+        loginJob = buildLoginJob();
+    }
+
+    @OnEditorAction(R.id.password)
+    boolean onPasswordEdit(int id) {
+        if (id == R.id.login || id == EditorInfo.IME_NULL) {
+            onAttemptLogin();
+            return true;
+        }
+        return false;
+    }
+
+    private RxLoader1<LoginData, AuthResult> buildLoginJob() {
+        return rxLoaderManager.create((LoginData data) -> sessionManager.tryLogin(data),
             new RxLoaderObserver<AuthResult>() {
                 @Override
                 public void onStarted() {
@@ -90,6 +102,7 @@ public class AuthActivity extends FragmentActivity {
                 @Override
                 public void onNext(AuthResult authResult) {
                     activityMediator.showDashboard();
+                    finish();
                 }
 
                 @Override
@@ -99,22 +112,7 @@ public class AuthActivity extends FragmentActivity {
                 }
             }
         ).save();
-    }
 
-    @OnClick(R.id.email_sign_in_button)
-    void onTryLogin() {
-        attemptLogin();
-    }
-
-    private void populateAutoComplete() {
-        AuthActivityOperator operator = AuthActivityOperator.build().operations(this).withinActivity(this).get();
-        operator.when()
-            .findAccountEmailsIsFinished()
-            .subscribe(
-                emails -> addEmailsToAutoComplete(emails),
-                e -> Timber.w(e, "Problem getting accounts")
-            );
-        operator.forceFindAccountEmails();
     }
 
     @RxLoad
@@ -135,12 +133,26 @@ public class AuthActivity extends FragmentActivity {
             .get();
     }
 
+    private void handleEmailAutoComplete() {
+        asyncOperator.when()
+            .findAccountEmailsIsFinished()
+            .subscribe(
+                emails -> addEmailsToAutoComplete(emails),
+                e -> Timber.w(e, "Problem getting accounts")
+            );
+    }
+
+    private void populateAutoComplete() {
+        asyncOperator.forceFindAccountEmails();
+    }
+
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    public void attemptLogin() {
+    @OnClick(R.id.email_sign_in_button)
+    public void onAttemptLogin() {
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
@@ -178,7 +190,7 @@ public class AuthActivity extends FragmentActivity {
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            loginJob.save().restart(new LoginData(email, password));
+            loginJob.restart(new LoginData(email, password));
         }
     }
 
@@ -251,8 +263,6 @@ public class AuthActivity extends FragmentActivity {
         mEmailView.setAdapter(adapter);
     }
 
-    private RxLoaderManager rxLoaderManager;
-    private RxLoader1<LoginData, AuthResult> loginJob;
 }
 
 

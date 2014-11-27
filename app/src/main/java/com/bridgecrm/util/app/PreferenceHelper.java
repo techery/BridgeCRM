@@ -111,6 +111,18 @@ public class PreferenceHelper {
     }
 
     ///////////////////////////////////////////////////////////////////////////
+    // Has
+    ///////////////////////////////////////////////////////////////////////////
+
+    public boolean hasValue(String key) {
+        return prefs.contains(key);
+    }
+
+    public boolean hasValue(Class clazz) {
+        return prefs.contains(getClassKey(clazz));
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
     // Clear
     ///////////////////////////////////////////////////////////////////////////
 
@@ -121,7 +133,7 @@ public class PreferenceHelper {
     public void clearAll() {
         prefs.edit().clear().commit();
     }
-    
+
     ///////////////////////////////////////////////////////////////////////////
     // Gson addition
     ///////////////////////////////////////////////////////////////////////////
@@ -151,34 +163,46 @@ public class PreferenceHelper {
         // Object Helpers
         ///////////////////////////////////////////////////////////////////////////
 
-        public  <U> U getObjectFromGson(String key, TypeToken<U> typeToken, boolean asEncrypted) {
+        public <U> U getObjectFromGson(String key, TypeToken<U> typeToken, boolean asEncrypted) {
             return gson.fromJson(getStringValue(key, asEncrypted), typeToken.getType());
         }
-        
-        public  <Z> Z getObjectFromGson(String key, Class<Z> type, boolean asEncrypted) {
+
+        public <Z> Z getObjectFromGson(String key, Class<Z> type, boolean asEncrypted) {
             return gson.fromJson(getStringValue(key, asEncrypted), type);
         }
 
-        public  <Z> Z getObjectFromGson(Class<Z> type, boolean asEncrypted) {
-            return gson.fromJson(getStringValue(type.getClass().getSimpleName(), asEncrypted), type);
+        public <Z> Z getObjectFromGson(Class<Z> type, boolean asEncrypted) {
+            return gson.fromJson(getStringValue(getClassKey(type), asEncrypted), type);
         }
 
-        public  <U> U getObjectFromGson(TypeToken<U> typeToken, boolean asEncrypted) {
-            return gson.fromJson(getStringValue(typeToken.getClass().getSimpleName(), asEncrypted), typeToken.getType());
+        public <U> U getObjectFromGson(TypeToken<U> typeToken, boolean asEncrypted) {
+            return gson.fromJson(getStringValue(getClassKey(typeToken), asEncrypted), typeToken.getType());
         }
 
-        public  <Z> void storeObjectAsGson(String key, Z object, boolean asEncrypted) {
+        public <Z> void storeObjectAsGson(String key, Z object, boolean asEncrypted) {
             Type type = new TypeToken<Z>() {
             }.getType();
             storeValue(key, gson.toJson(object, type), asEncrypted);
         }
 
-        public  <Z> void storeObjectAsGson(Z object, boolean asEncrypted) {
+        public <Z> void storeObjectAsGson(Z object, boolean asEncrypted) {
             Type type = new TypeToken<Z>() {
             }.getType();
-            storeValue(type.getClass().getSimpleName(), gson.toJson(object, type), asEncrypted);
+            storeValue(getClassKey(object.getClass()), gson.toJson(object, type), asEncrypted);
         }
 
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // misc
+    ///////////////////////////////////////////////////////////////////////////
+
+    private static String getClassKey(Class clazz) {
+        return clazz.getName();
+    }
+
+    private static <U> String getClassKey(TypeToken<U> typeToken) {
+        return typeToken.getRawType().getName();
     }
 
 }

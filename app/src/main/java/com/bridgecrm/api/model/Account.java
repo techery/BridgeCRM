@@ -21,6 +21,30 @@ public class Account implements Parcelable{
         this.email = email;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Account account = (Account) o;
+
+        if (email != null ? !email.equals(account.email) : account.email != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return email != null ? email.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+            "email='" + email + '\'' +
+            '}';
+    }
+
     public static class AccountBuilder {
         private String email;
 

@@ -32,7 +32,7 @@ public class SessionManager {
     ///////////////////////////////////////////////////////////////////////////
 
     public boolean isSessionExist() {
-        return ParseUser.getCurrentUser() != null && ParseUser.getCurrentUser().isAuthenticated();
+        return ParseUser.getCurrentUser() != null && ParseUser.getCurrentUser().isAuthenticated() && preferences.hasValue(Account.class);
     }
 
     public Account getAccount() {
@@ -61,7 +61,8 @@ public class SessionManager {
         Observable<AuthResult> job =
             authJob
                 .doOnNext(account -> {
-                        Timber.d("Auth success");
+                        Timber.d("Auth success, got %s", account);
+                        preferences.storeObjectAsGson(account, false);
                     }
                 )
                 .doOnError(e -> {
@@ -75,7 +76,19 @@ public class SessionManager {
         return job;
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // Logout
+    ///////////////////////////////////////////////////////////////////////////
+
+    private PublishSubject<Boolean> logoutPublisher = PublishSubject.create();
+
+    public Observable<Boolean> getLogoutPipe() {
+        return logoutPublisher.asObservable();
+    }
+
     public void logout() {
         ParseUser.logOut();
+        preferences.clearAll();
+        logoutPublisher.onNext(true);
     }
 }

@@ -96,6 +96,7 @@ dependencies {
         exclude group: 'com.netflix.rxjava'
     }
     provided 'com.stanfy.enroscar:enroscar-async-compiler:2.+'
+    compile 'com.stanfy.enroscar:enroscar-goro:2.0.0@aar'
     compile 'de.halfbit:tinybus:2.+'
     compile 'de.halfbit:tinybus-extensions:2.+'
     compile 'com.parse.bolts:bolts-android:1.1.2' // for Parse
