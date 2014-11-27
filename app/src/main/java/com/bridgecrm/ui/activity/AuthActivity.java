@@ -2,10 +2,6 @@ package com.bridgecrm.ui.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +22,9 @@ import com.bridgecrm.api.model.AuthResult;
 import com.bridgecrm.api.model.LoginData;
 import com.bridgecrm.manager.SessionManager;
 import com.bridgecrm.ui.ActivityMediator;
+import com.stanfy.enroscar.async.Async;
+import com.stanfy.enroscar.async.Tools;
+import com.stanfy.enroscar.async.rx.RxLoad;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +38,7 @@ import me.tatarka.rxloader.RxLoader1;
 import me.tatarka.rxloader.RxLoaderManager;
 import me.tatarka.rxloader.RxLoaderManagerCompat;
 import me.tatarka.rxloader.RxLoaderObserver;
+import timber.log.Timber;
 
 /**
  * A login screen that offers login via email/password.
@@ -95,7 +95,7 @@ public class AuthActivity extends FragmentActivity {
                 @Override
                 public void onError(Throwable e) {
                     showProgress(false);
-                    Toast.makeText(AuthActivity.this, R.string.error_invalid_password, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AuthActivity.this, R.string.error_incorrect_password, Toast.LENGTH_SHORT).show();
                 }
             }
         ).save();
@@ -107,46 +107,33 @@ public class AuthActivity extends FragmentActivity {
     }
 
     private void populateAutoComplete() {
-        getLoaderManager().initLoader(0, null, new LoaderCallbacks<Cursor>() {
-                @Override
-                public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-                    return new CursorLoader(AuthActivity.this,
-                        // Retrieve data rows for the device user's 'profile' contact.
-                        Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                            ContactsContract.Contacts.Data.CONTENT_DIRECTORY
-                        ), ProfileQuery.PROJECTION,
-
-                        // Select only email addresses.
-                        ContactsContract.Contacts.Data.MIMETYPE +
-                            " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                        .CONTENT_ITEM_TYPE},
-
-                        // Show primary email addresses first. Note that there won't be
-                        // a primary email address if the user hasn't specified one.
-                        ContactsContract.Contacts.Data.IS_PRIMARY + " DESC"
-                    );
-                }
-
-                @Override
-                public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-                    List<String> emails = new ArrayList<>();
-                    cursor.moveToFirst();
-                    while (!cursor.isAfterLast()) {
-                        emails.add(cursor.getString(ProfileQuery.ADDRESS));
-                        cursor.moveToNext();
-                    }
-
-                    addEmailsToAutoComplete(emails);
-                }
-
-                @Override
-                public void onLoaderReset(Loader<Cursor> cursorLoader) {
-
-                }
-            }
-        );
+        AuthActivityOperator operator = AuthActivityOperator.build().operations(this).withinActivity(this).get();
+        operator.when()
+            .findAccountEmailsIsFinished()
+            .subscribe(
+                emails -> addEmailsToAutoComplete(emails),
+                e -> Timber.w(e, "Problem getting accounts")
+            );
+        operator.forceFindAccountEmails();
     }
 
+    @RxLoad
+    Async<List<String>> findAccountEmails() {
+        return Tools.asyncCursor(this)
+            .uri(Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI, ContactsContract.Contacts.Data.CONTENT_DIRECTORY))
+            .projection(ProfileQuery.PROJECTION)
+            .selection(ContactsContract.Contacts.Data.MIMETYPE + " = ?")
+            .selectionArgs(new String[]{ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE})
+            .convert(cursor -> {
+                    List<String> emails = new ArrayList<>();
+                    while (cursor.moveToNext()) {
+                        emails.add(cursor.getString(ProfileQuery.ADDRESS));
+                    }
+                    return emails;
+                }
+            )
+            .get();
+    }
 
     /**
      * Attempts to sign in or register the account specified by the login form.
