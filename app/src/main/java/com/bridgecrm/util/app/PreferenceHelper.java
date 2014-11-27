@@ -159,10 +159,24 @@ public class PreferenceHelper {
             return gson.fromJson(getStringValue(key, asEncrypted), type);
         }
 
+        public  <Z> Z getObjectFromGson(Class<Z> type, boolean asEncrypted) {
+            return gson.fromJson(getStringValue(type.getClass().getSimpleName(), asEncrypted), type);
+        }
+
+        public  <U> U getObjectFromGson(TypeToken<U> typeToken, boolean asEncrypted) {
+            return gson.fromJson(getStringValue(typeToken.getClass().getSimpleName(), asEncrypted), typeToken.getType());
+        }
+
         public  <Z> void storeObjectAsGson(String key, Z object, boolean asEncrypted) {
             Type type = new TypeToken<Z>() {
             }.getType();
             storeValue(key, gson.toJson(object, type), asEncrypted);
+        }
+
+        public  <Z> void storeObjectAsGson(Z object, boolean asEncrypted) {
+            Type type = new TypeToken<Z>() {
+            }.getType();
+            storeValue(type.getClass().getSimpleName(), gson.toJson(object, type), asEncrypted);
         }
 
     }

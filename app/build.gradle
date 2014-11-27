@@ -84,8 +84,11 @@ dependencies {
     compile 'com.android.support:support-v4:21.+'
     // reactivity
     compile 'io.reactivex:rxandroid:+'
-    compile 'de.halfbit:tinybus:2.0.+'
-    compile 'de.halfbit:tinybus-extensions:2.0.+'
+    compile ('me.tatarka.rxloader:rxloader:1.+') {
+        exclude group: 'com.netflix.rxjava'
+    }
+    compile 'de.halfbit:tinybus:2.+'
+    compile 'de.halfbit:tinybus-extensions:2.+'
     compile 'com.parse.bolts:bolts-android:1.1.2' // for Parse
     // di
     compile 'com.google.dagger:dagger:2.+'

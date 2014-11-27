@@ -6,6 +6,7 @@ import com.bridgecrm.api.AccountApi;
 import com.bridgecrm.manager.GoogleTrackingManager;
 import com.bridgecrm.manager.PreferenceWrapper;
 import com.bridgecrm.manager.SessionManager;
+import com.bridgecrm.manager.SyncManager;
 import com.bridgecrm.manager.TrackingWrapper;
 
 import javax.inject.Singleton;
@@ -37,6 +38,12 @@ public class ManagerModule {
     ///////////////////////////////////////////////////////////////////////////
     // Main managers
     ///////////////////////////////////////////////////////////////////////////
+
+    @Provides
+    @Singleton
+    SyncManager provideSyncManager(Context context, SessionManager sessionManager) {
+        return new SyncManager(context, sessionManager);
+    }
 
     @Provides
     @Singleton

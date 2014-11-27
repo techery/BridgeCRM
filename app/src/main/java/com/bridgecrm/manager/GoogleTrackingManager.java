@@ -15,6 +15,8 @@ import com.google.android.gms.analytics.Tracker;
 import java.util.HashMap;
 import java.util.Map;
 
+import timber.log.Timber;
+
 import static com.google.android.gms.analytics.HitBuilders.EventBuilder;
 
 public class GoogleTrackingManager {
@@ -34,11 +36,15 @@ public class GoogleTrackingManager {
      */
     public GoogleTrackingManager(Context context, GoogleAnalytics googleAnalytics, GoogleAnalyticsCredentialsHolder holder) {
         String[] analyticKeys = holder.getTrackersKeys();
-        if (analyticKeys == null || analyticKeys.length == 0)
+        if (analyticKeys == null) {
             throw new IllegalArgumentException(
-                "Error analyticKeys can not be empty!" +
+                "Error analyticKeys can not be null!" +
                     "Please, provide proper credentials holder"
             );
+        } else if (analyticKeys.length == 0) {
+            Timber.w("Analytics keys are empty, no tracking involved");
+            return;
+        }
         // init GA
         googleAnalytics.setLocalDispatchPeriod(DISPATCH_PERIOD);
         googleAnalytics.getLogger().setLogLevel(BuildConfig.DEBUG ? Logger.LogLevel.VERBOSE : Logger.LogLevel.ERROR);

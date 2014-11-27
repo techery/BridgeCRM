@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.bridgecrm.di.AppGraph;
 import com.bridgecrm.manager.ParseManager;
+import com.bridgecrm.manager.SyncManager;
 import com.bridgecrm.manager.lifecycle.AppComponentCallback;
 import com.bridgecrm.manager.lifecycle.MainLifecycleCallbacks;
 import com.bridgecrm.util.app.ActivityHierarchyServer;
@@ -26,6 +27,8 @@ public class App extends Application {
     @Inject
     AppComponentCallback appComponentCallback;
 
+    @Inject
+    SyncManager syncManager;
     @Inject
     ParseManager parseManager;
 

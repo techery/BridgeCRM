@@ -3,18 +3,33 @@
     package="com.bridgecrm"
     >
 
+    <!---->
+    <!--Permissions-->
+    <!---->
+
+    <!-- Network -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <!---->
+    <!--App-->
+    <!---->
 
     <application
-        android:name=".App"
+        android:name="com.bridgecrm.App"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         >
         <activity
-            android:name=".ui.activity.MainActivity"
-            android:label="@string/app_name"
+            android:name="com.bridgecrm.ui.activity.LaunchActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoAnimTheme"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,6 +37,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.bridgecrm.ui.activity.AuthActivity"
+            android:label="@string/title_activity_auth"
+            />
+        <activity
+            android:name="com.bridgecrm.ui.activity.MainActivity"
+            android:label="@string/app_name"
+            />
 
         <!---->
         <!-- Google Play services -->
@@ -33,7 +56,7 @@
         <!---->
         <!-- Analytics -->
         <receiver
-            android:name=".helper.InstallReceiver"
+            android:name="com.bridgecrm.helper.InstallReceiver"
             android:exported="true"
             >
             <intent-filter>
