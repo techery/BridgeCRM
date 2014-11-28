@@ -25,6 +25,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
+        tools:node="replace"
         >
         <activity
             android:name="com.bridgecrm.ui.activity.LaunchActivity"

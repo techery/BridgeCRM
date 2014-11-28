@@ -2,9 +2,20 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppBaseTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
+        <item name="colorPrimary">#ff4dfa76</item>
+        <item name="colorPrimaryDark">#ff2e875d</item>
+        <item name="colorAccent">#ff47c76f</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:actionBarItemBackground">@null</item>
+        <item name="android:actionButtonStyle">@style/ActionButtonStyle</item>
+        <item name="android:actionOverflowButtonStyle">@style/OverflowButtonStyle</item>
     </style>
+
+    <!-- Main theme, override for newer api -->
+    <style name="AppTheme" parent="AppBaseTheme"></style>
+
 
     <style name="NoAnimTheme" parent="android:Theme.Translucent.NoTitleBar">
         <item name="android:windowAnimationStyle">@null</item>

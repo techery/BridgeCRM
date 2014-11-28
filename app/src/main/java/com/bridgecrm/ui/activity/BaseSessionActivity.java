@@ -20,9 +20,9 @@ import timber.log.Timber;
 public abstract class BaseSessionActivity extends BaseActivity {
 
     @Inject
-    SessionManager sessionManager;
+    protected SessionManager sessionManager;
     @Inject
-    ActivityMediator activityMediator;
+    protected ActivityMediator activityMediator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
