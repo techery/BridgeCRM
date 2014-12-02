@@ -6,10 +6,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.text.TextUtils;
-import android.util.Patterns;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
@@ -34,6 +31,11 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
+import eu.inmite.android.lib.validations.form.FormValidator;
+import eu.inmite.android.lib.validations.form.annotations.MinLength;
+import eu.inmite.android.lib.validations.form.annotations.NotEmpty;
+import eu.inmite.android.lib.validations.form.annotations.RegExp;
+import eu.inmite.android.lib.validations.form.callback.SimpleErrorPopupCallback;
 import me.tatarka.rxloader.RxLoader1;
 import me.tatarka.rxloader.RxLoaderManager;
 import me.tatarka.rxloader.RxLoaderManagerCompat;
@@ -46,14 +48,20 @@ import timber.log.Timber;
 public class AuthActivity extends BaseActivity {
 
     // UI references.
-    @InjectView(R.id.email)
-    AutoCompleteTextView mEmailView;
-    @InjectView(R.id.password)
-    EditText mPasswordView;
+    @NotEmpty(messageId = R.string.error_field_required, order = 1)
+    @RegExp(value = RegExp.EMAIL, messageId = R.string.error_invalid_email, order = 2)
+    @InjectView(R.id.auth_email)
+    AutoCompleteTextView emailView;
+
+    @NotEmpty(messageId = R.string.error_field_required, order = 3)
+    @MinLength(value = 4, messageId = R.string.error_invalid_password, order = 4)
+    @InjectView(R.id.auth_password)
+    EditText passwordView;
+
     @InjectView(R.id.login_progress)
-    View mProgressView;
+    View progressView;
     @InjectView(R.id.login_form)
-    View mLoginFormView;
+    View loginFormView;
 
     @Inject
     SessionManager sessionManager;
@@ -82,14 +90,28 @@ public class AuthActivity extends BaseActivity {
         loginJob = buildLoginJob();
     }
 
-    @OnEditorAction(R.id.password)
+    @OnEditorAction(R.id.auth_password)
     boolean onPasswordEdit(int id) {
-        if (id == R.id.login || id == EditorInfo.IME_NULL) {
+        if (id == getResources().getInteger(R.integer.action_done)) {
             onAttemptLogin();
             return true;
         }
         return false;
     }
+
+    /**
+     * Attempts to sign in or register the account specified by the login form.
+     * If there are form errors (invalid email, missing fields, etc.), the
+     * errors are presented and no actual login attempt is made.
+     */
+    @OnClick(R.id.email_sign_in_button)
+    public void onAttemptLogin() {
+        boolean isValid = FormValidator.validate(this, new SimpleErrorPopupCallback(getApplicationContext(), true));
+        if (isValid) {
+            loginJob.restart(new LoginData(emailView.getText().toString(), passwordView.getText().toString()));
+        }
+    }
+
 
     private RxLoader1<LoginData, AuthResult> buildLoginJob() {
         return rxLoaderManager.create((LoginData data) -> sessionManager.tryLogin(data),
@@ -133,6 +155,10 @@ public class AuthActivity extends BaseActivity {
             .get();
     }
 
+    private void populateAutoComplete() {
+        asyncOperator.forceFindAccountEmails();
+    }
+
     private void handleEmailAutoComplete() {
         asyncOperator.when()
             .findAccountEmailsIsFinished()
@@ -142,65 +168,12 @@ public class AuthActivity extends BaseActivity {
             );
     }
 
-    private void populateAutoComplete() {
-        asyncOperator.forceFindAccountEmails();
-    }
-
-    /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
-    @OnClick(R.id.email_sign_in_button)
-    public void onAttemptLogin() {
-        // Reset errors.
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
-
-        // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
-
-        boolean cancel = false;
-        View focusView = null;
-
-
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
-
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
-            cancel = true;
-        }
-
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            loginJob.restart(new LoginData(email, password));
-        }
-    }
-
-    private boolean isEmailValid(String email) {
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
-    }
-
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
+    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
+        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(AuthActivity.this,
+            R.layout.support_simple_spinner_dropdown_item, emailAddressCollection
+        );
+        emailView.setAdapter(adapter);
     }
 
     /**
@@ -213,54 +186,42 @@ public class AuthActivity extends BaseActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+            loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            loginFormView.animate().setDuration(shortAnimTime).alpha(
                 show ? 0 : 1
             ).setListener(new AnimatorListenerAdapter() {
                               @Override
                               public void onAnimationEnd(Animator animation) {
-                                  mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                                  loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
                               }
                           }
             );
 
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
+            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            progressView.animate().setDuration(shortAnimTime).alpha(
                 show ? 1 : 0
             ).setListener(new AnimatorListenerAdapter() {
                               @Override
                               public void onAnimationEnd(Animator animation) {
-                                  mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                                  progressView.setVisibility(show ? View.VISIBLE : View.GONE);
                               }
                           }
             );
         } else {
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
-
     private interface ProfileQuery {
+
         String[] PROJECTION = {
             ContactsContract.CommonDataKinds.Email.ADDRESS,
             ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
         };
-
         int ADDRESS = 0;
         int IS_PRIMARY = 1;
-    }
-
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-            new ArrayAdapter<String>(AuthActivity.this,
-                android.R.layout.simple_dropdown_item_1line, emailAddressCollection
-            );
-
-        mEmailView.setAdapter(adapter);
     }
 
 }

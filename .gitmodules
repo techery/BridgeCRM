@@ -1,0 +1,3 @@
+[submodule "libProjects/android-validation-komensky"]
+	path = libProjects/android-validation-komensky
+	url = git@github.com:almozavr/android-validation-komensky.git

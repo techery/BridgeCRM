@@ -35,26 +35,25 @@
             >
 
             <AutoCompleteTextView
-                android:id="@+id/email"
+                android:id="@+id/auth_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/prompt_email"
+                android:imeOptions="actionNext"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
+                android:nextFocusDown="@+id/auth_password"
                 android:singleLine="true"
                 />
 
             <EditText
-                android:id="@+id/password"
+                android:id="@+id/auth_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/prompt_password"
-                android:imeActionId="@+id/login"
+                android:imeActionId="@integer/action_done"
                 android:imeActionLabel="@string/action_sign_in_short"
-                android:imeOptions="actionUnspecified"
                 android:inputType="textPassword"
-                android:maxLines="1"
-                android:singleLine="true"
                 />
 
             <Button
