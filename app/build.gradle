@@ -90,7 +90,9 @@ dependencies {
     compile 'com.android.support:support-v4:21.+'
     // reactivity
     compile 'io.reactivex:rxandroid:+'
-    compile project(':libProjects:rxloader:rxloader')
+    compile('me.tatarka.rxloader:rxloader:1.0.2') {
+        exclude group: 'com.netflix.rxjava'
+    }
     compile 'com.stanfy.enroscar:enroscar-async:2.+}'
     compile('com.stanfy.enroscar:enroscar-async-rx:2.+') {
         exclude group: 'com.netflix.rxjava'

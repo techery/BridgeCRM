@@ -1,4 +1,3 @@
 include ':app'
 
-include ':libProjects:rxloader:rxloader'
 include ':libProjects:AndroidFloatLabel:FloatLabel'
