@@ -17,6 +17,7 @@ import android.renderscript.Element;
 import android.renderscript.RSRuntimeException;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
+import android.support.v4.app.DialogFragment;
 import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -28,10 +29,12 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.FrameLayout;
+
+import com.bridgecrm.R;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -207,16 +210,19 @@ public class UiUtil {
     ///////////////////////////////////////////////////////////////////////////
 
     /**
-     * Center dialog content inside available space
+     * Center dialog content inside available space.
+     * Width is set to {@link ViewGroup.LayoutParams#MATCH_PARENT} and height is set to {@link ViewGroup.LayoutParams#WRAP_CONTENT}.
+     * Should be called from {@link DialogFragment#onStart()}
      *
      * @param dialog
      */
     public static void centerDialogContent(Dialog dialog) {
-        ViewGroup decorView = (ViewGroup) dialog.getWindow().getDecorView();
-        View content = decorView.getChildAt(0);
-        FrameLayout.LayoutParams contentParams = (FrameLayout.LayoutParams) content.getLayoutParams();
-        contentParams.gravity = Gravity.CENTER;
-        content.setLayoutParams(contentParams);
+        Window window = dialog.getWindow();
+        WindowManager.LayoutParams p = window.getAttributes();
+        p.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        p.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        p.gravity = Gravity.CENTER;
+        window.setAttributes(p);
     }
 
     ///////////////////////////////////////////////////////////////////////////

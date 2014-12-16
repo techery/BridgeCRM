@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Dialog" parent="Theme.AppCompat.Dialog">
+    </style>
+
+    <!--Translucent-->
+    <style name="Dialog.NoBackground">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:autoCompleteTextViewStyle">@style/Widget.AppCompat.AutoCompleteTextView</item>
+    </style>
+
+    <style name="Dialog.NoBackground.SlideBottomAndFade">
+        <item name="android:windowAnimationStyle">@style/DialogSlideBottomTopAnimation</item>
+    </style>
+
+    <!---->
+    <!--Dialog animation-->
+    <!---->
+    <style name="DialogSlideBottomTopAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:windowEnterAnimation">@anim/abc_slide_in_bottom</item>
+        <item name="android:windowExitAnimation">@anim/abc_fade_out</item>
+    </style>
+
+</resources>

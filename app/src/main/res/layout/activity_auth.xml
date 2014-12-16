@@ -1,68 +1,71 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.bridgecrm.ui.activity.AuthActivity"
     >
 
-    <!-- Login progress -->
-    <ProgressBar
-        android:id="@+id/login_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone"
-        />
-
-    <ScrollView
-        android:id="@+id/login_form"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         >
 
-        <LinearLayout
-            android:id="@+id/email_login_form"
-            android:layout_width="match_parent"
+        <ProgressBar
+            android:id="@+id/auth_progress"
+            style="?indeterminateProgressStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
+            android:layout_gravity="center_horizontal|top"
+            android:visibility="invisible"
+            />
 
-            <com.iangclifton.android.floatlabel.FloatLabel
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/prompt_email"
-                android:layout="@layout/view_auth_email"
-                app:editTextId="@+id/auth_email"
-                />
+        <android.support.v4.view.ViewPager
+            android:id="@+id/auth_tour"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
 
-            <com.iangclifton.android.floatlabel.FloatLabel
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/prompt_password"
-                android:layout="@layout/view_auth_password"
-                app:editTextId="@+id/auth_password"
-                />
+        <com.viewpagerindicator.CirclePageIndicator
+            android:id="@+id/auth_tour_titles"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_gravity="center_horizontal|bottom"
+            android:padding="10dp"
+            app:fillColor="?colorAccent"
+            />
+    </FrameLayout>
 
-            <Button
-                android:id="@+id/email_sign_in_button"
-                style="?android:textAppearanceSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/action_sign_in"
-                android:textStyle="bold"
-                />
 
-        </LinearLayout>
-    </ScrollView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="?android:dividerVertical"
+        android:showDividers="middle"
+        android:dividerPadding="10dp"
+        >
+
+        <Button
+            android:id="@+id/auth_sign_in"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/auth_action_sign_in"
+            android:background="?selectableItemBackground"
+            />
+
+        <Button
+            android:id="@+id/auth_sign_up"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/auth_action_sign_up"
+            android:background="?selectableItemBackground"
+            />
+
+    </LinearLayout>
 
 </LinearLayout>
 

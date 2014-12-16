@@ -6,6 +6,8 @@ apply plugin: 'com.stanfy.android.apt'
 repositories {
     mavenCentral()
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url "http://dl.bintray.com/populov/maven" }
+    maven { url 'https://github.com/tvbarthel/maven/raw/master/' }
 }
 
 // Manifest version information!
@@ -88,9 +90,7 @@ dependencies {
     compile 'com.android.support:support-v4:21.+'
     // reactivity
     compile 'io.reactivex:rxandroid:+'
-    compile ('me.tatarka.rxloader:rxloader:1.+') {
-        exclude group: 'com.netflix.rxjava'
-    }
+    compile project(':libProjects:rxloader:rxloader')
     compile 'com.stanfy.enroscar:enroscar-async:2.+}'
     compile('com.stanfy.enroscar:enroscar-async-rx:2.+') {
         exclude group: 'com.netflix.rxjava'
@@ -111,7 +111,14 @@ dependencies {
     // ui
     compile 'com.github.johnkil.android-appmsg:appmsg:1.+'
     compile 'com.balysv.materialmenu:material-menu-toolbar:1+'
-    compile project(':libProjects:android-validation-komensky:library')
+    compile('fr.avianey.com.viewpagerindicator:library:2.4.1') {
+        exclude group: 'com.google.android'
+    }
+    compile 'com.android.support:cardview-v7:21.0.+'
+    compile 'fr.tvbarthel.lib.blurdialogfragment:lib:0.1.+'
+    compile 'com.github.andkulikov:transitions-everywhere:1.+'
+    compile 'com.guerwan:transitionbackport:1.+'
+    compile 'eu.inmite.android.lib:android-validation-komensky:+'
     compile project(':libProjects:AndroidFloatLabel:FloatLabel')
 
     // services
@@ -119,6 +126,8 @@ dependencies {
     // util
     compile 'com.jakewharton:butterknife:6.0.0'
     compile 'com.jakewharton.timber:timber:2.+'
+    compile 'com.hannesdorfmann.fragmentargs:annotation:1.+'
+    provided 'com.hannesdorfmann.fragmentargs:processor:1.+'
     debugCompile 'com.jakewharton.madge:madge:1.+'
     debugCompile 'com.jakewharton.scalpel:scalpel:1.+'
 }

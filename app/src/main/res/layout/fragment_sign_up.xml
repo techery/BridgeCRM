@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    >
+
+    <com.iangclifton.android.floatlabel.FloatLabel
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/auth_name_hint"
+        android:imeOptions="actionNext"
+        android:inputType="textPersonName"
+        android:nextFocusDown="@+id/auth_email"
+        android:nextFocusForward="@+id/auth_email"
+        app:editTextId="@+id/auth_name"
+        />
+
+    <com.iangclifton.android.floatlabel.FloatLabel
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/auth_email_hint"
+        android:imeOptions="actionNext"
+        android:inputType="textEmailAddress|textAutoComplete"
+        android:layout="@layout/view_auth_email"
+        android:nextFocusDown="@+id/auth_password"
+        android:nextFocusForward="@+id/auth_password"
+        app:editTextId="@+id/auth_email"
+        />
+
+    <com.iangclifton.android.floatlabel.FloatLabel
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/auth_password_hint"
+        android:inputType="textPassword"
+        android:layout="@layout/view_auth_password"
+        app:editTextId="@+id/auth_password"
+        />
+
+    <Button
+        android:id="@+id/auth_proceed_button"
+        style="?android:textAppearanceSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/auth_action_sign_up"
+        android:textStyle="bold"
+        />
+</LinearLayout>

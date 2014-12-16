@@ -11,21 +11,23 @@
     <string name="title_section3">Section 3</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <!--Menu-->
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="action_logout">Logout</string>
 
     <!---->
     <!--Auth-->
     <!---->
-    <string name="title_activity_auth">Welcome!</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="action_logout">Logout</string>
+    <string name="auth_activity_title">Welcome!</string>
+    <string name="auth_email_hint">Email</string>
+    <string name="auth_password_hint">Password</string>
+    <string name="auth_forgot_password"><u>Forgot password</u>?</string>
+    <string name="auth_name_hint">Display Name</string>
+    <string name="auth_action_sign_in">Login</string>
+    <string name="auth_action_sign_up">Sign up</string>
+    <string name="auth_error_invalid_email">This email address is invalid</string>
+    <string name="auth_error_invalid_password">This password is too short</string>
+    <string name="auth_error_incorrect_password">This password is incorrect</string>
 
     <!---->
     <!--Common Errors-->

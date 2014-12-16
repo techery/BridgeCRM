@@ -41,7 +41,7 @@
         </activity>
         <activity
             android:name="com.bridgecrm.ui.activity.AuthActivity"
-            android:label="@string/title_activity_auth"
+            android:label="@string/auth_activity_title"
             />
         <activity
             android:name="com.bridgecrm.ui.activity.MainActivity"

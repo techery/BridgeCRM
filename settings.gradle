@@ -1,4 +1,4 @@
 include ':app'
 
-include ':libProjects:android-validation-komensky:library',
-        ':libProjects:AndroidFloatLabel:FloatLabel'
+include ':libProjects:rxloader:rxloader'
+include ':libProjects:AndroidFloatLabel:FloatLabel'

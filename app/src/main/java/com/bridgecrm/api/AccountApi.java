@@ -23,7 +23,6 @@ public class AccountApi {
             )
             .map(user -> new Account.AccountBuilder(user).create())
             .subscribeOn(Schedulers.io());
-
     }
 
     public Observable<Account> register(String email, String password, String name) {
@@ -45,7 +44,6 @@ public class AccountApi {
             )
             .map(user -> new Account.AccountBuilder(user).create())
             .subscribeOn(Schedulers.io());
-
     }
 
 }
