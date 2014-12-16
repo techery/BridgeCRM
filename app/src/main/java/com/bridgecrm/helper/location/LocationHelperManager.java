@@ -3,6 +3,7 @@ package com.bridgecrm.helper.location;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -28,11 +29,13 @@ import com.bridgecrm.util.location.geocoder.Result;
 import com.bridgecrm.util.play.event.GooglePlayServicesRetryEvent;
 import com.bridgecrm.util.play.event.GooglePlayServicesUnavailable;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.gson.GsonBuilder;
 import com.halfbit.tinybus.TinyBus;
 import com.squareup.okhttp.OkHttpClient;
@@ -47,12 +50,12 @@ import timber.log.Timber;
 
 import static android.provider.Settings.Secure;
 
-public class LocationHelperManager implements GooglePlayServicesClient.ConnectionCallbacks,
-    GooglePlayServicesClient.OnConnectionFailedListener, LocationListener {
+public class LocationHelperManager implements GoogleApiClient.ConnectionCallbacks,
+    GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private final Context context;
-    private final LocationClient locationClient;
 
+    private GoogleApiClient googleApiClient;
     private Location cachedLocation;
     private LocationType pendingRequest;
 
@@ -71,7 +74,11 @@ public class LocationHelperManager implements GooglePlayServicesClient.Connectio
 
     public LocationHelperManager(Context context) {
         this.context = context;
-        locationClient = new LocationClient(context, this, this);
+        googleApiClient = new GoogleApiClient.Builder(context)
+            .addApi(LocationServices.API)
+            .addConnectionCallbacks(this)
+            .addOnConnectionFailedListener(this)
+            .build();
         timeoutHandler = new RequestTimeoutHandler();
         checkServiceConnected();
     }
@@ -80,12 +87,14 @@ public class LocationHelperManager implements GooglePlayServicesClient.Connectio
     // Cycle related
     ///////////////////////////////////////////////////////////////////////////
 
-    public void onStart() {
-        locationClient.connect();
+    Activity activity;
+
+    public void onStart(Activity activity) {
+        this.activity = activity;
     }
 
     public void onStop() {
-        locationClient.disconnect();
+        this.activity = null;
     }
 
     public boolean handleOnActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
@@ -96,8 +105,8 @@ public class LocationHelperManager implements GooglePlayServicesClient.Connectio
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                     /* Try the request again */
-                        if (!locationClient.isConnected() && !locationClient.isConnecting()) {
-                            locationClient.connect();
+                        if (!googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
+                            googleApiClient.connect();
                         }
                         break;
                 }
@@ -111,14 +120,14 @@ public class LocationHelperManager implements GooglePlayServicesClient.Connectio
     // Main logic
     ///////////////////////////////////////////////////////////////////////////
 
-    /** Check if google play services is ready, and {@link LocationClient} is connected */
+    /** Check if google play services is ready, and {@link GoogleApiClient} is connected */
     private boolean checkServiceConnected() {
         // Check that Google Play services is available
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
         // If Google Play services is available
         if (ConnectionResult.SUCCESS == resultCode) {
             Timber.d("Google Play services is available.");
-            return locationClient.isConnected();
+            return googleApiClient.isConnected();
         } else {
             Timber.d("Google Play services is unavailable.");
             // Google Play services was not available for some reason
@@ -128,18 +137,19 @@ public class LocationHelperManager implements GooglePlayServicesClient.Connectio
         }
     }
 
+    /*connection status*/
 
     @Override
     public void onConnected(Bundle bundle) {
         Timber.d("LocationClient is connected");
-        cachedLocation = locationClient.getLastLocation();
+        cachedLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
         if (pendingRequest != null) {
             askLocation(pendingRequest);
         }
     }
 
     @Override
-    public void onDisconnected() {
+    public void onConnectionSuspended(int i) {
         Timber.d("LocationClient is disconnected");
     }
 
@@ -162,6 +172,8 @@ public class LocationHelperManager implements GooglePlayServicesClient.Connectio
         }
     }
 
+    /*Location change*/
+
     @Override
     public void onLocationChanged(Location location) {
         Timber.d("Location changed: %s", location);
@@ -171,13 +183,14 @@ public class LocationHelperManager implements GooglePlayServicesClient.Connectio
         TinyBus.from(context).post(new LocationUpdateEvent(location));
     }
 
-    /** Get last cached location or last location from {@link LocationClient} if is connected or null otherwise */
+    /** Get last cached location or last location from {@link GoogleApiClient} if is connected or null otherwise */
     public Location getCachedLocation() {
-        return cachedLocation != null ? cachedLocation : locationClient.isConnected() ? locationClient.getLastLocation() : null;
+        return cachedLocation != null ? cachedLocation : googleApiClient.isConnected() ?
+            LocationServices.FusedLocationApi.getLastLocation(googleApiClient) : null;
     }
 
     /**
-     * Ask {@link LocationClient} to respond with location of proper {@link LocationType}.
+     * Ask {@link GoogleApiClient} to respond with location of proper {@link LocationType}.
      * If client is not connected, will try to connect and re-run request. If no provider available for location type, will post {@link LocationProviderNeededEvent}.
      * If client is ok, will respond with {@link LocationUpdateEvent}, see {@link #onLocationChanged(Location)}.
      */
@@ -193,9 +206,9 @@ public class LocationHelperManager implements GooglePlayServicesClient.Connectio
         } else {
             pendingRequest = type;
             Timber.d("Location client is not connected");
-            if (!locationClient.isConnecting()) {
+            if (!googleApiClient.isConnecting()) {
                 Timber.d("Connecting...");
-                locationClient.connect();
+                googleApiClient.connect();
             }
         }
     }
@@ -215,10 +228,28 @@ public class LocationHelperManager implements GooglePlayServicesClient.Connectio
             .setExpirationDuration(REQUEST_EXPIRATION * DateUtils.SECOND_IN_MILLIS);
     }
 
-    /** Ask {@link LocationClient} for update, start request timeout handler */
+    /** Ask {@link LocationServices#FusedLocationApi} for update, start request timeout handler */
     private void requestLocationUpdate(LocationRequest request) {
         Timber.d("Requesting location with: %s", request);
-        locationClient.requestLocationUpdates(request, this);
+        PendingResult<Status> pendingResult = LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, request, this);
+        pendingResult.setResultCallback(status -> {
+                if (status.isSuccess()) {
+                    // Successfully registered
+                } else if (status.hasResolution()) {
+                    // Google provides a way to fix the issue
+                    try {
+                        // your current activity used to receive the result the result code you'll look for in your
+                        // onActivityResult method to retry registering
+                        status.startResolutionForResult(activity, CONNECTION_FAILURE_RESOLUTION_REQUEST); // the result code you'll look for in your
+                    } catch (IntentSender.SendIntentException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    // No recovery. Weep softly or inform the user.
+                    Timber.w("Registering failed: %s", status.getStatusMessage());
+                }
+        }
+        );
         timeoutHandler.trackRequestSent(request.getExpirationTime() - SystemClock.elapsedRealtime());
     }
 

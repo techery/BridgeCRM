@@ -1,5 +1,6 @@
 package com.bridgecrm.di;
 
+import com.bridgecrm.helper.location.LocationHelperManager;
 import com.bridgecrm.manager.lifecycle.AppComponentCallback;
 import com.bridgecrm.manager.lifecycle.MainLifecycleCallbacks;
 import com.bridgecrm.ui.ActivityMediator;
@@ -21,8 +22,8 @@ public class LifecycleModule {
     ///////////////////////////////////////////////////////////////////////////
 
     @Provides
-    MainLifecycleCallbacks provideLifeCycleCallbacks(ActivityMediator activityMediator) {
-        return new MainLifecycleCallbacks(activityMediator);
+    MainLifecycleCallbacks provideLifeCycleCallbacks(ActivityMediator activityMediator, LocationHelperManager locationHelperManager) {
+        return new MainLifecycleCallbacks(activityMediator, locationHelperManager);
     }
 
     ///////////////////////////////////////////////////////////////////////////

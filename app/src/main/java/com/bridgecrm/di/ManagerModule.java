@@ -3,6 +3,7 @@ package com.bridgecrm.di;
 import android.content.Context;
 
 import com.bridgecrm.api.AccountApi;
+import com.bridgecrm.helper.location.LocationHelperManager;
 import com.bridgecrm.manager.GoogleTrackingManager;
 import com.bridgecrm.manager.PreferenceWrapper;
 import com.bridgecrm.manager.SessionManager;
@@ -49,6 +50,16 @@ public class ManagerModule {
     @Singleton
     SessionManager provideSessionManager(Context context, AccountApi accountApi, PreferenceWrapper preferenceWrapper, TrackingWrapper trackingWrapper) {
         return new SessionManager(context, preferenceWrapper, trackingWrapper, accountApi);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Helpers
+    ///////////////////////////////////////////////////////////////////////////
+
+    @Provides
+    @Singleton
+    LocationHelperManager provideLocationHelperManager(Context context) {
+        return new LocationHelperManager(context);
     }
 
     ///////////////////////////////////////////////////////////////////////////
