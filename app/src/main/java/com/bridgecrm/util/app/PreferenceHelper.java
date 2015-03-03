@@ -152,6 +152,11 @@ public class PreferenceHelper {
             initGson();
         }
 
+        public GsonPreferenceHelper(Context context, String name, int mode, Gson gson) {
+            super(context, name, mode);
+            this.gson = gson;
+        }
+
         private void initGson() {
             gson = new GsonBuilder()
                 .registerTypeAdapter(Collection.class, new CollectionDeserializer())

@@ -7,6 +7,7 @@ repositories {
     mavenCentral()
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     maven { url "http://dl.bintray.com/populov/maven" }
+    maven { url 'http://dl.bintray.com/amulyakhare/maven' }
     maven { url 'https://github.com/tvbarthel/maven/raw/master/' }
 }
 
@@ -111,6 +112,8 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.1.+'
     compile 'com.google.code.gson:gson:2.3.1'
     // ui
+    compile 'com.android.support:cardview-v7:21.0.+'
+    compile 'com.android.support:recyclerview-v7:21.0.+'
     compile 'com.github.johnkil.android-appmsg:appmsg:1.+'
     compile 'com.balysv.materialmenu:material-menu-toolbar:1+'
     compile('fr.avianey.com.viewpagerindicator:library:2.4.1') {
@@ -122,15 +125,15 @@ dependencies {
     compile 'com.guerwan:transitionbackport:1.+'
     compile 'eu.inmite.android.lib:android-validation-komensky:+'
     compile project(':libProjects:AndroidFloatLabel:FloatLabel')
-
+    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.+'
     // services
     compile 'com.google.android.gms:play-services-base:6.5.+'
     compile 'com.google.android.gms:play-services-location:6.5.+'
     // util
     compile 'com.jakewharton:butterknife:6.0.0'
     compile 'com.jakewharton.timber:timber:2.+'
-    compile 'com.hannesdorfmann.fragmentargs:annotation:1.+'
-    provided 'com.hannesdorfmann.fragmentargs:processor:1.+'
+    compile 'com.hannesdorfmann.fragmentargs:annotation:2.0.+'
+    provided 'com.hannesdorfmann.fragmentargs:processor:2.0.+'
     debugCompile 'com.jakewharton.madge:madge:1.+'
     debugCompile 'com.jakewharton.scalpel:scalpel:1.+'
 }

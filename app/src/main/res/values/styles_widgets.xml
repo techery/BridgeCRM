@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!---->
+    <!--TextView-->
+    <!---->
+
+    <style name="Title">
+        <item name="android:textAppearance">@style/TitleAppearance</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="Disclaimer">
+        <item name="android:textAppearance">@style/DisclaimerAppearance</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="TitleAppearance" parent="TextAppearance.AppCompat.Display2"></style>
+    <style name="DisclaimerAppearance" parent="TextAppearance.AppCompat.Large"></style>
+
 </resources>

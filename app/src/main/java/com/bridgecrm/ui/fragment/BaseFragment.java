@@ -4,11 +4,19 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
+import com.hannesdorfmann.fragmentargs.FragmentArgs;
+
 import java.lang.reflect.Field;
 
 import butterknife.ButterKnife;
 
 public class BaseFragment extends Fragment {
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        FragmentArgs.inject(this);
+    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {

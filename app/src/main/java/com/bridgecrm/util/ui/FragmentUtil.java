@@ -1,6 +1,7 @@
 package com.bridgecrm.util.ui;
 
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 
 import com.bridgecrm.util.base.ListUtils;
 
@@ -29,4 +30,7 @@ public class FragmentUtil {
         return byTag != null && !byTag.isRemoving();
     }
 
+    public static boolean hasFragments(FragmentActivity activity) {
+        return !ListUtils.isEmpty(activity.getSupportFragmentManager().getFragments());
+    }
 }
