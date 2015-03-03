@@ -1,15 +1,8 @@
 apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.application'
-apply plugin: 'retrolambda'
+apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.stanfy.android.apt'
-
-repositories {
-    mavenCentral()
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-    maven { url "http://dl.bintray.com/populov/maven" }
-    maven { url 'http://dl.bintray.com/amulyakhare/maven' }
-    maven { url 'https://github.com/tvbarthel/maven/raw/master/' }
-}
+apply plugin: 'play'
 
 // Manifest version information!
 def versionMajor = 1
@@ -84,6 +77,15 @@ android {
 
 }
 
+repositories {
+    jcenter()
+    maven { url "https://jitpack.io" }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url "http://dl.bintray.com/populov/maven" }
+    maven { url 'http://dl.bintray.com/amulyakhare/maven' }
+    maven { url 'https://github.com/tvbarthel/maven/raw/master/' }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
     // base
@@ -124,7 +126,7 @@ dependencies {
     compile 'com.github.andkulikov:transitions-everywhere:1.+'
     compile 'com.guerwan:transitionbackport:1.+'
     compile 'eu.inmite.android.lib:android-validation-komensky:+'
-    compile project(':libProjects:AndroidFloatLabel:FloatLabel')
+    compile 'com.github.IanGClifton:AndroidFloatLabel:2543611'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.+'
     // services
     compile 'com.google.android.gms:play-services-base:6.5.+'

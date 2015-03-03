@@ -1,6 +1,3 @@
-[submodule "libProjects/AndroidFloatLabel"]
-	path = libProjects/AndroidFloatLabel
-	url = git@github.com:almozavr/AndroidFloatLabel.git
 [submodule "libProjects/rxloader"]
 	path = libProjects/rxloader
 	url = git@github.com:evant/rxloader.git
